@@ -81,6 +81,14 @@ def init_database():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     ''')
+
+    # Seed default admin accounts if not existing
+    default_admins = [
+        ('admin@example.com', 'admin123'),
+        ('yasaswabrahmammuppalla@gmail.com', 'admin123')
+    ]
+    for email, pwd in default_admins:
+        cursor.execute('INSERT OR IGNORE INTO admin (email, password) VALUES (?, ?)', (email, pwd))
     
     conn.commit()
     conn.close()

@@ -6,78 +6,13 @@
 <div align="center">
 
 #  **🏝️ Smart AI Resume Analyzer 🏝️**  
-<!--<img src="https://github.com/user-attachments/assets/8a37c282-efa0-45af-8f37-8e564a62ecd2" width="35">-->
 **Your Intelligent Career Partner**  
-<img src="https://github.com/user-attachments/assets/76906dbc-343d-4267-ace5-048d428fff42" width="20px"> Smart AI Resume Analyzer is your all-in-one tool to analyze, optimize, and craft resumes that stand out, helping you land your dream job.  
+Smart AI Resume Analyzer is your all-in-one tool to analyze, optimize, and craft resumes that stand out, helping you land your dream job.  
 </div>
 
+<br/>
 
-
-
-## 📊 **GitHub Stats**
-
-<div align="center">
-
-<table align="center">
-    <thead align="center">
-        <tr>
-            <td><b>🌟 Stars</b></td>
-            <td><b>🍴 Forks</b></td>
-            <td><b>🐛 Issues</b></td>
-            <td><b>📏 Repo Size</b></td>
-            <td><b>🔔 Open PRs</b></td>
-            <td><b>🔕 Closed PRs</b></td>
-            <td><b>📈 Contributors</b></td>
-            <td><b>❤ Open Source</b></td>
-        </tr>
-     </thead>
-    <tbody>
-         <tr>
-            <td><img alt="Stars" src="https://img.shields.io/github/stars/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&logo=github"/></td>
-            <td><img alt="Forks" src="https://img.shields.io/github/forks/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&logo=github"/></td>
-            <td><img alt="Issues" src="https://img.shields.io/github/issues/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&logo=github"/></td>
-            <td><img alt="Repo Size" src="https://img.shields.io/github/repo-size/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&logo=github"/></td>
-            <td><img alt="Open PRs" src="https://img.shields.io/github/issues-pr/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&logo=github"/></td>
-            <td><img alt="Closed PRs" src="https://img.shields.io/github/issues-pr-closed/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&color=critical&logo=github"/></td>
-            <td><img alt="Contributors" src="https://img.shields.io/github/contributors/Hunterdii/Smart-AI-Resume-Analyzer?style=flat&logo=github"/></td>
-            <td><img src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103" alt="open source"/></td>
-        </tr>
-    </tbody>
-</table>
-
-  <h4>
-    <a href="https://resumind.streamlit.app/">View Demo</a>
-    <span> · </span>
-    <a href="#-setup-in-minutes">Set-Up (Installation)</a>
-    <span> · </span>
-    <a href="mailto:het8185@gmail.com?subject=I%20Want%20The%20Project%20Report%20of%20Smart%20AI-RESUME-ANALYZER&body=Here%20Are%20My%20Details%20%F0%9F%98%89%0D%0A%0D%0AOrganization%2FCollege%20Name%3A%20%0D%0A%0D%0AFull%20Name%3A%20%0D%0A%0D%0AGitHub%20Profile%20%3A%20%0D%0A%0D%0AFrom%20where%20did%20you%20get%20to%20know%20about%20this%20project%3A%0D%0A%0D%0APurpose%20of%20asking%20project%20report%20(describe)%3A%0D%0A%0D%0A%0D%0AIf%20the%20above%20information%20satisfy%20your%20identity%20you%20will%20get%20the%20report%20to%20your%20email.">Project Report</a>
-  </h4>
-  <p>
-    <small align="justify">
-      Built with <img src="https://github.com/user-attachments/assets/00314b63-96bb-4e9a-92f6-4ead67e0fb7d" width="25" height="25"> for 
-      1st Year 2nd Semester Project
-     </small>
-  </p>
-  <small align="justify"><img src="https://github.com/user-attachments/assets/76906dbc-343d-4267-ace5-048d428fff42" width="20px"> 
-    1st Year 2nd Semester Project
-  </small>
-</div><br/><br/>
-</div>  
-
-
-## 🔗 **Helpful Links**
-
-- [![Streamlit Badge](https://img.shields.io/badge/Live%20Demo-Streamlit-orange?style=for-the-badge&logo=streamlit&logoColor=white)](https://resumind.streamlit.app/)  
-
-- [![Documentation Badge](https://img.shields.io/badge/Documentation-Request-blue?style=for-the-badge&logo=gmail&logoColor=white)](mailto:het8185@gmail.com?subject=Request%20Documentation%20for%20Smart%20AI%20Resume%20Analyzer&body=Hi%20Het%20Patel,%0D%0AI%20am%20interested%20in%20learning%20more%20about%20your%20project,%20Smart%20AI%20Resume%20Analyzer.%20Here%20are%20my%20details:%0D%0A%0D%0AName:%0D%0AOrganization/College:%0D%0APurpose%20of%20request:%0D%0A%0D%0AThanks!)  
-
-- [![AI Models Badge](https://img.shields.io/badge/AI%20Models-Documentation-purple?style=for-the-badge&logo=openai&logoColor=white)](AI_MODELS.md)  
-
-- [![Contribution Guide Badge](https://img.shields.io/badge/Contribution%20Guide-Read%20Here-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Hunterdii/Smart-AI-Resume-Analyzer/blob/main/.github/CONTRIBUTING.md)   
-
-- [![Support Badge](https://img.shields.io/badge/Support%20%26%20Feedback-Discussion-ff69b4?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Hunterdii/Smart-AI-Resume-Analyzer/discussions)  
-  
-## <img src="https://github.com/user-attachments/assets/a6e4d77f-56d6-4aa8-8278-0f5a18ef5eb9" width="24px"> **What Makes Us Different?**  
+## **What Makes Us Different?**  
 
 **<img src="https://github.com/user-attachments/assets/76906dbc-343d-4267-ace5-048d428fff42" width="20px"> Next-Level Features for Success:**  
 1. 🕵️ **Deep Resume Analysis:**  

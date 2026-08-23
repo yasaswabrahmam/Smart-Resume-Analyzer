@@ -1,0 +1,9 @@
+# GitHub Linguist Configuration
+*.py linguist-language=Python
+*.c linguist-vendored=true
+*.h linguist-vendored=true
+*.cpp linguist-vendored=true
+*.sh linguist-vendored=true
+*.bat linguist-vendored=true
+poppler/** linguist-vendored=true
+assets/** linguist-vendored=true

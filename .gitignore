@@ -137,4 +137,5 @@ Thumbs.db
 uploads/
 resume_data.db
 poppler.zip
+poppler/
 *.xlsx

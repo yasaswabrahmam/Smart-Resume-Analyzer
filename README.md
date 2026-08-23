@@ -4,6 +4,12 @@
 #  **🏝️ Smart AI Resume Analyzer 🏝️**  
 **Your Intelligent Career Partner**  
 Smart AI Resume Analyzer is your all-in-one tool to analyze, optimize, and craft resumes that stand out, helping you land your dream job.  
+
+<br/>
+
+### 🚀 **[Click Here to Launch App Demo](https://resumind.streamlit.app/)**  
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://resumind.streamlit.app/)
+
 </div>
 
 <br/>

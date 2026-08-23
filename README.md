@@ -8,33 +8,6 @@ Smart AI Resume Analyzer is your all-in-one tool to analyze, optimize, and craft
 
 <br/>
 
-## **What Makes Us Different?**  
-
-**<img src="https://github.com/user-attachments/assets/76906dbc-343d-4267-ace5-048d428fff42" width="20px"> Next-Level Features for Success:**  
-1. 🕵️ **Deep Resume Analysis:**  
-   - 🛡️ ATS Compatibility Score  
-   - 🔑 Keyword Gap Analysis  
-   - 🧩 Role-specific Feedback  
-   - 📊 Skills Gap Breakdown  
-
-2. 🎨 **AI-Powered Resume Builder:**  
-   - **Themes that Shine** (Modern, Minimal, Professional, Creative)  
-   - **Smart Content Suggestions**  
-   - **ATS-Optimized Formatting**  
-   - **Customizable Sections**  
-
-3. 🤖 **AI Optimization Engine:**  
-   - 💡 Keyword Highlighting  
-   - ✍️ Content Enhancement Tips  
-   - 🌟 Industry-Specific Insights  
-
-**🎉 Why Use Smart Resume AI?**  
-Get real-time feedback, boost your resume's impact, and maximize your chances of getting shortlisted—all with a sleek and intuitive interface.  
-
-## <img src="https://github.com/user-attachments/assets/e5ac1371-6ac4-48b6-b95c-5ef9afaf1353" width="30"> **Live Demo**  
-👨‍💻 Try it Now: [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://resumind.streamlit.app/)  
-
-
 ## <img src="https://github.com/user-attachments/assets/0cefad05-58a9-4aa0-a070-f75a0c9b0353" height="32px">  Tech Stack 
 <details>
   <summary>🌐 Frontend</summary>

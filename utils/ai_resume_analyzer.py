@@ -204,19 +204,7 @@ class AIResumeAnalyzer:
         try:
             genai.configure(api_key=self.google_api_key)
 
-            model = None
-            model_names = ["gemini-flash-latest", "gemini-3.8-flash", "gemini-3.5-flash", "gemini-pro-latest", "gemini-1.5-flash"]
-            for m_name in model_names:
-                try:
-                    candidate_model = genai.GenerativeModel(m_name)
-                    # Quick dry-run check or assign model
-                    model = candidate_model
-                    break
-                except Exception as m_err:
-                    continue
-            
-            if not model:
-                model = genai.GenerativeModel("gemini-flash-latest")
+            model_candidates = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-3.5-flash", "gemini-pro-latest"]
             
             base_prompt = f"""
             You are an expert resume analyst with deep knowledge of industry standards, job requirements, and hiring practices across various fields. Your task is to provide a comprehensive, detailed analysis of the resume provided.
@@ -283,8 +271,20 @@ class AIResumeAnalyzer:
                 [List specific requirements from the job description that are not addressed in the resume, with recommendations on how to address each gap]
                 """
             
-            response = model.generate_content(base_prompt)
-            analysis = response.text.strip()
+            analysis = None
+            last_err = None
+            for m_name in model_candidates:
+                try:
+                    curr_model = genai.GenerativeModel(m_name)
+                    response = curr_model.generate_content(base_prompt)
+                    analysis = response.text.strip()
+                    break
+                except Exception as m_err:
+                    last_err = m_err
+                    continue
+            
+            if not analysis:
+                raise last_err or Exception("All available Gemini models failed to generate content.")
             
             # Extract resume score if present
             resume_score = self._extract_score_from_text(analysis)
@@ -300,14 +300,6 @@ class AIResumeAnalyzer:
         
         except Exception as e:
             err_msg = str(e)
-            if "429" in err_msg or "Quota exceeded" in err_msg or "rate-limits" in err_msg:
-                return {
-                    "error": (
-                        "⏳ **Free Tier Rate Limit Reached (429 Quota Exceeded)**\n\n"
-                        "Google Gemini allows up to **5 requests per minute** on the free tier.\n"
-                        "Please wait ~30 seconds and try clicking **Analyze Resume with AI** again!"
-                    )
-                }
             if "CONSUMER_SUSPENDED" in err_msg or "403" in err_msg or "PermissionDenied" in err_msg:
                 return {
                     "error": (

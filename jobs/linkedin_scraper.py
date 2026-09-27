@@ -3,15 +3,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from streamlit_extras.add_vertical_space import add_vertical_space
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 import warnings
 warnings.filterwarnings('ignore')
-
-# Import our custom webdriver utility
-from .webdriver_utils import setup_webdriver
 
 class LinkedInScraper:
     """Class for scraping job listings from LinkedIn"""
@@ -19,7 +12,7 @@ class LinkedInScraper:
     @staticmethod
     def webdriver_setup():
         """Set up and configure the Chrome webdriver"""
-        # Use our custom webdriver setup utility with multiple fallback options
+        from .webdriver_utils import setup_webdriver
         return setup_webdriver()
 
     @staticmethod
@@ -53,6 +46,7 @@ class LinkedInScraper:
             st.markdown('<div class="linkedin-form">', unsafe_allow_html=True)
             st.markdown('<h3 class="linkedin-title"><i class="fab fa-linkedin"></i> LinkedIn Job Scraper</h3>', unsafe_allow_html=True)
             st.markdown('<p class="linkedin-subtitle">Find real-time job listings directly from LinkedIn</p>', unsafe_allow_html=True)
+            st.warning("⚠️ **Disclaimer:** LinkedIn scraping may be blocked by LinkedIn. If it fails, please use the standard 'Job Portal' search tab instead.")
             
         with st.form(key='linkedin_scrape'):
             col1, col2, col3 = st.columns([0.5, 0.3, 0.2], gap='medium')
@@ -126,6 +120,7 @@ class LinkedInScraper:
     @staticmethod
     def open_link(driver, link):
         """Open LinkedIn link and wait for page to load"""
+        from selenium.webdriver.common.by import By
         max_attempts = 3
         attempts = 0
         
@@ -178,6 +173,7 @@ class LinkedInScraper:
     @staticmethod
     def link_open_scrolldown(driver, link, job_count):
         """Open LinkedIn link and scroll down to load more jobs"""
+        from selenium.webdriver.common.by import By
         # Open the link
         if not LinkedInScraper.open_link(driver, link):
             return False
@@ -248,6 +244,7 @@ class LinkedInScraper:
     @staticmethod
     def scrap_company_data(driver, job_title_input, job_location):
         """Scrape company data from LinkedIn job listings"""
+        from selenium.webdriver.common.by import By
         try:
             # Scrape company names
             company_elements = driver.find_elements(
@@ -336,6 +333,7 @@ class LinkedInScraper:
     @staticmethod
     def scrap_job_description(driver, df, job_count):
         """Scrape job descriptions for each job listing"""
+        from selenium.webdriver.common.by import By
         if df.empty:
             return df
         
@@ -603,10 +601,14 @@ class LinkedInScraper:
                     try:
                         # Set up Chrome webdriver
                         with st.spinner('Setting up Chrome webdriver...'):
-                            driver = LinkedInScraper.webdriver_setup()
-                            
-                            if not driver:
-                                st.error("Failed to initialize Chrome webdriver. Please make sure Chrome is installed.")
+                            try:
+                                driver = LinkedInScraper.webdriver_setup()
+                                if not driver:
+                                    st.error("Failed to initialize Chrome webdriver. Please make sure Chrome is installed or use the regular Job Portal search.")
+                                    return
+                            except Exception as e:
+                                st.error(f"Failed to launch Chrome browser: {str(e)}")
+                                st.info("This feature requires Chrome to be installed locally. Please use the standard 'Job Portal' tab instead.")
                                 return
                         
                         # Build URL and open LinkedIn

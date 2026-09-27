@@ -11,7 +11,6 @@ from .suggestions import (
     get_all_states
 )
 from .companies import get_featured_companies, get_market_insights
-from .linkedin_scraper import render_linkedin_scraper
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_option_menu import option_menu
 
@@ -330,8 +329,8 @@ def render_job_search():
         # Create tabs with icons
         tabs = option_menu(
             menu_title=None,
-            options=["Job Portal", "LinkedIn"],
-            icons=["search", "linkedin"],
+            options=["Job Portal", "Public APIs", "LinkedIn"],
+            icons=["search", "globe", "linkedin"],
             menu_icon="cast",
             default_index=0,
             orientation="horizontal",
@@ -494,12 +493,45 @@ def render_job_search():
                 else:
                     st.warning("Please enter a job title or skills to search.")
         
+        elif tabs == "Public APIs":
+            st.markdown('<h3 class="search-title"><i class="fas fa-globe" style="color: #00bfa5;"></i> Public API Job Search</h3>', unsafe_allow_html=True)
+            st.markdown('<p class="search-description">Search for jobs via safe public APIs (e.g., Remotive). <strong>Note: These are SOURCE ONLY and not verified as currently active.</strong></p>', unsafe_allow_html=True)
+            
+            col1, col2 = st.columns([2, 1])
+            with col1:
+                api_query = st.text_input("Job Title / Skills (API)", placeholder="e.g. Python, React")
+            with col2:
+                api_location = st.text_input("Location (API)", placeholder="e.g. Remote, US")
+                
+            if st.button("SEARCH PUBLIC APIs", type="primary", use_container_width=True):
+                if api_query:
+                    with st.spinner("Searching public APIs..."):
+                        from .public_jobs import PublicJobSearch
+                        jobs = PublicJobSearch.search_jobs(api_query, api_location)
+                        
+                        if jobs:
+                            st.success(f"Found {len(jobs)} jobs from public APIs!")
+                            for job in jobs:
+                                st.markdown(f"""
+                                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #00bfa5;">
+                                    <h4 style="margin:0; color: #00bfa5;">{job['title']}</h4>
+                                    <p style="margin:5px 0;"><strong>{job['company']}</strong> | {job['location']} | {job['employment_type'] or 'N/A'}</p>
+                                    <p style="font-size: 0.9em; color: #aaa;">Source: {job['source']} (Posted: {job['posted_date'] or 'N/A'})</p>
+                                    <a href="{job['apply_url']}" target="_blank" style="display:inline-block; margin-top:10px; background:#00bfa5; color:white; padding:5px 15px; border-radius:5px; text-decoration:none;">View Job Details</a>
+                                </div>
+                                """, unsafe_allow_html=True)
+                        else:
+                            st.warning("No jobs found via public APIs. Try different keywords.")
+                else:
+                    st.warning("Please enter a job title or skills to search.")
+
         else:
             # LinkedIn Job Scraper - only show the title once
             st.markdown('<h3 class="search-title"><i class="fab fa-linkedin" style="color: #0A66C2;"></i> LinkedIn Job Scraper</h3>', unsafe_allow_html=True)
             st.markdown('<p class="search-description">Find real-time job listings directly from LinkedIn</p>', unsafe_allow_html=True)
             
             # Render LinkedIn scraper without showing the title again
+            from .linkedin_scraper import render_linkedin_scraper
             render_linkedin_scraper()
         
         st.markdown('</div>', unsafe_allow_html=True)

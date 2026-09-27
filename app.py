@@ -19,7 +19,6 @@ import base64
 import plotly.graph_objects as go
 from streamlit_lottie import st_lottie
 import requests
-from dashboard.dashboard import DashboardManager
 from config.courses import COURSES_BY_CATEGORY, RESUME_VIDEOS, INTERVIEW_VIDEOS, get_courses_for_role, get_category_for_role
 from config.job_roles import JOB_ROLES
 from config.database import (
@@ -27,15 +26,19 @@ from config.database import (
     init_database, verify_admin, log_admin_action, save_ai_analysis_data,
     get_ai_analysis_stats, reset_ai_analysis_stats, get_detailed_ai_analysis_stats
 )
-from utils.ai_resume_analyzer import AIResumeAnalyzer
-from utils.resume_builder import ResumeBuilder
-from utils.resume_analyzer import ResumeAnalyzer
 import traceback
 import plotly.express as px
 import pandas as pd
 import json
 import streamlit as st
 import datetime
+
+def show_user_error(message, exception=None):
+    import streamlit as st
+    st.error(message)
+    if exception:
+        import logging
+        logging.error(f'Internal error: {exception}', exc_info=True)
 
 # Set page config at the very beginning
 st.set_page_config(
@@ -44,6 +47,42 @@ st.set_page_config(
     layout="wide"
 )
 
+
+@st.cache_resource
+def get_dashboard_manager():
+    from dashboard.dashboard import DashboardManager
+    return DashboardManager()
+
+@st.cache_resource
+def get_resume_analyzer():
+    from utils.resume_analyzer import ResumeAnalyzer
+    return ResumeAnalyzer()
+
+@st.cache_resource
+def get_ai_resume_analyzer(api_key=None):
+    from utils.ai_resume_analyzer import AIResumeAnalyzer
+    return AIResumeAnalyzer(google_api_key=api_key)
+
+@st.cache_resource
+def get_resume_builder():
+    from utils.resume_builder import ResumeBuilder
+    return ResumeBuilder()
+
+@st.cache_resource
+def cached_init_database():
+    init_database()
+
+@st.cache_data
+def load_cached_css():
+    with open('style/style.css') as f:
+        return f'<style>{f.read()}</style>'
+
+@st.cache_data
+def load_lottie_url_cached(url: str):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
 class ResumeApp:
     def __init__(self):
@@ -74,6 +113,14 @@ class ResumeApp:
         if 'page' not in st.session_state:
             st.session_state.page = 'home'
 
+        # Admin session timeout (8 hours)
+        if st.session_state.get('is_admin', False) and 'admin_login_time' in st.session_state:
+            import time
+            if time.time() - st.session_state.admin_login_time > 8 * 3600:
+                st.session_state.is_admin = False
+                st.session_state.admin_login_time = None
+                st.warning("Admin session expired. Please log in again.")
+
         # Initialize admin state
         if 'is_admin' not in st.session_state:
             st.session_state.is_admin = False
@@ -89,11 +136,11 @@ class ResumeApp:
         }
 
         # Initialize dashboard manager
-        self.dashboard_manager = DashboardManager()
+        self.dashboard_manager = get_dashboard_manager()
 
-        self.analyzer = ResumeAnalyzer()
-        self.ai_analyzer = AIResumeAnalyzer(google_api_key=st.session_state.get('custom_gemini_api_key'))
-        self.builder = ResumeBuilder()
+        self.analyzer = get_resume_analyzer()
+        self.ai_analyzer = get_ai_resume_analyzer(st.session_state.get('custom_gemini_api_key'))
+        self.builder = get_resume_builder()
         self.job_roles = JOB_ROLES
 
         # Initialize session state
@@ -103,11 +150,10 @@ class ResumeApp:
             st.session_state.selected_role = None
 
         # Initialize database
-        init_database()
+        cached_init_database()
 
         # Load external CSS
-        with open('style/style.css') as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+        st.markdown(load_cached_css(), unsafe_allow_html=True)
 
         # Load Google Fonts
         st.markdown("""
@@ -123,13 +169,6 @@ class ResumeApp:
                 'total_analyses': 0,
                 'average_score': 0
             }
-
-    def load_lottie_url(self, url: str):
-        """Load Lottie animation from URL"""
-        r = requests.get(url)
-        if r.status_code != 200:
-            return None
-        return r.json()
 
     def apply_global_styles(self):
         st.markdown("""
@@ -570,7 +609,7 @@ class ResumeApp:
 
                 return True
             except Exception as e:
-                st.error(f"Error processing resume: {str(e)}")
+                show_user_error("An error occurred while processing your resume.", e)
                 return False
         return False
 
@@ -2782,49 +2821,8 @@ class ResumeApp:
 
 
     def render_home(self):
-        apply_modern_styles()
-        
-        # Hero Section
-        hero_section(
-            "Smart Resume AI",
-            "Transform your career with AI-powered resume analysis and building. Get personalized insights and create professional resumes that stand out."
-        )
-        
-        # Features Section
-        st.markdown('<div class="feature-grid">', unsafe_allow_html=True)
-        
-        feature_card(
-            "fas fa-robot",
-            "AI-Powered Analysis",
-            "Get instant feedback on your resume with advanced AI analysis that identifies strengths and areas for improvement."
-        )
-        
-        feature_card(
-            "fas fa-magic",
-            "Smart Resume Builder",
-            "Create professional resumes with our intelligent builder that suggests optimal content and formatting."
-        )
-        
-        feature_card(
-            "fas fa-chart-line",
-            "Career Insights",
-            "Access detailed analytics and personalized recommendations to enhance your career prospects."
-        )
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.toast("Check out these repositories: [AI-Nexus(AI/ML)](https://github.com/Hunterdii/AI-Nexus)", icon="ℹ️")
-
-        # Call-to-Action with Streamlit navigation
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            if st.button("Get Started", key="get_started_btn", 
-                        help="Click to start analyzing your resume",
-                        type="primary",
-                        use_container_width=True):
-                cleaned_name = "🔍 RESUME ANALYZER".lower().replace(" ", "_").replace("🔍", "").strip()
-                st.session_state.page = cleaned_name
-                st.rerun()
+        from pages.home import render_home_page
+        render_home_page(self)
 
     def render_job_search(self):
         """Render the job search page"""
@@ -2892,7 +2890,7 @@ class ResumeApp:
         
         # Admin login/logout in sidebar
         with st.sidebar:
-            st_lottie(self.load_lottie_url("https://assets5.lottiefiles.com/packages/lf20_xyadoh9h.json"), height=200, key="sidebar_animation")
+            st_lottie(load_lottie_url_cached("https://assets5.lottiefiles.com/packages/lf20_xyadoh9h.json"), height=200, key="sidebar_animation")
             st.title("Smart Resume AI")
             st.markdown("---")
             

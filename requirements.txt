@@ -7,7 +7,6 @@ python-docx
 pandas
 plotly
 pillow
-pycryptodome
 python-dotenv
 pdfminer.six
 nltk
@@ -20,17 +19,11 @@ pypdf
 selenium
 numpy
 webdriver-manager
-chromedriver-autoinstaller
 google-generativeai
 pdf2image
 pytesseract
 pdfplumber
 reportlab
-openrouter
-docx2pdf
 docx2txt
-python-pptx
-matplotlib
-seaborn
-pypdf2
 xlsxwriter
+bcrypt

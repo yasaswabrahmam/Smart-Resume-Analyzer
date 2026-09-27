@@ -1,5 +1,29 @@
 import sqlite3
+import hashlib
+import os
+import binascii
 from datetime import datetime
+
+def hash_password(password):
+    """Hash a password for storing."""
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
+    pwdhash = binascii.hexlify(pwdhash)
+    return (salt + b':' + pwdhash).decode('ascii')
+
+def verify_password(plain, hashed):
+    """Verify a stored password against one provided by user."""
+    if ':' not in hashed:
+        return False
+    try:
+        salt, pwdhash = hashed.split(':')
+        salt = salt.encode('ascii')
+        pwdhash = pwdhash.encode('ascii')
+        pwdhash_new = hashlib.pbkdf2_hmac('sha512', plain.encode('utf-8'), salt, 100000)
+        pwdhash_new = binascii.hexlify(pwdhash_new)
+        return pwdhash == pwdhash_new
+    except Exception:
+        return False
 
 def get_database_connection():
     """Create and return a database connection"""
@@ -82,13 +106,7 @@ def init_database():
     )
     ''')
 
-    # Seed default admin accounts if not existing
-    default_admins = [
-        ('admin@example.com', 'admin123'),
-        ('yasaswabrahmammuppalla@gmail.com', 'admin123')
-    ]
-    for email, pwd in default_admins:
-        cursor.execute('INSERT OR IGNORE INTO admin (email, password) VALUES (?, ?)', (email, pwd))
+    # To create an admin, run: python config/create_admin.py
     
     conn.commit()
     conn.close()
@@ -264,20 +282,40 @@ def get_all_resume_data():
     finally:
         conn.close()
 
-def verify_admin(email, password):
-    """Verify admin credentials"""
+def verify_admin(email: str, password: str) -> bool:
+    """Verify admin credentials. Supports both hashed (PBKDF2) and legacy plaintext passwords."""
+    import hmac as _hmac
+    import logging
+    _logger = logging.getLogger(__name__)
+
     conn = get_database_connection()
     cursor = conn.cursor()
-    
+
     try:
-        cursor.execute('SELECT * FROM admin WHERE email = ? AND password = ?', (email, password))
+        cursor.execute('SELECT password FROM admin WHERE email = ?', (email,))
         result = cursor.fetchone()
-        return bool(result)
+        if not result:
+            return False
+
+        stored_password = result[0]
+
+        # New format: PBKDF2 hashed (contains ':')
+        if ':' in stored_password:
+            return verify_password(password, stored_password)
+
+        # Legacy: plaintext — allow login but warn loudly
+        _logger.warning(
+            f"Admin '{email}' has a plaintext password. "
+            "Run 'python config/migrate_admin_passwords.py' to upgrade security."
+        )
+        return _hmac.compare_digest(password.encode('utf-8'), stored_password.encode('utf-8'))
+
     except Exception as e:
-        print(f"Error verifying admin: {str(e)}")
+        _logger.error(f"Error verifying admin: {e}")
         return False
     finally:
         conn.close()
+
 
 def add_admin(email, password):
     """Add a new admin"""
@@ -285,7 +323,8 @@ def add_admin(email, password):
     cursor = conn.cursor()
     
     try:
-        cursor.execute('INSERT INTO admin (email, password) VALUES (?, ?)', (email, password))
+        hashed = hash_password(password)
+        cursor.execute('INSERT INTO admin (email, password) VALUES (?, ?)', (email, hashed))
         conn.commit()
         return True
     except Exception as e:

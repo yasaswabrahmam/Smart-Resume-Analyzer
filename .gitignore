@@ -1,4 +1,4 @@
-// filepath: /D:/GIST/Smart-AI-Resume-Analyzer/.gitignore
+# Smart AI Resume Analyzer — .gitignore
 __pycache__/
 *.py[cod]
 *$py.class
@@ -139,3 +139,10 @@ resume_data.db
 poppler.zip
 poppler/
 *.xlsx
+.env
+
+# Database backups and temporary scripts
+*.db.backup*
+scratch_*.py
+test_import.py
+extract.py

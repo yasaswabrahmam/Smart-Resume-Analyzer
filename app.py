@@ -92,7 +92,7 @@ class ResumeApp:
         self.dashboard_manager = DashboardManager()
 
         self.analyzer = ResumeAnalyzer()
-        self.ai_analyzer = AIResumeAnalyzer()
+        self.ai_analyzer = AIResumeAnalyzer(google_api_key=st.session_state.get('custom_gemini_api_key'))
         self.builder = ResumeBuilder()
         self.job_roles = JOB_ROLES
 
@@ -2935,6 +2935,16 @@ class ResumeApp:
                                     st.error("Invalid credentials")
                             except Exception as e:
                                 st.error(f"Error during login: {str(e)}")
+
+            with st.expander("🔑 Gemini API Key Settings"):
+                user_api_key = st.text_input("Enter Gemini API Key", type="password", key="custom_gemini_api_key_input", help="Get a free key from https://aistudio.google.com/app/apikey")
+                if st.button("Save API Key", key="save_api_key_btn"):
+                    if user_api_key.strip():
+                        st.session_state.custom_gemini_api_key = user_api_key.strip()
+                        self.ai_analyzer.configure_google_api_key(user_api_key.strip())
+                        st.success("API Key updated successfully!")
+                    else:
+                        st.warning("Please enter a valid API key.")
         
             # Display the repository notification in the sidebar
             self.show_repo_notification()

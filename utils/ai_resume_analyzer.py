@@ -13,16 +13,28 @@ import re
 
 
 class AIResumeAnalyzer:
-    def __init__(self):
+    def __init__(self, google_api_key=None):
         # Load environment variables
         load_dotenv()
         
         # Configure Google Gemini AI
-        self.google_api_key = os.getenv("GOOGLE_API_KEY")
+        self.google_api_key = google_api_key or os.getenv("GOOGLE_API_KEY")
         self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
         
         if self.google_api_key:
-            genai.configure(api_key=self.google_api_key)
+            try:
+                genai.configure(api_key=self.google_api_key)
+            except Exception as e:
+                print(f"Error configuring genai: {e}")
+
+    def configure_google_api_key(self, api_key):
+        """Reconfigure Google API Key at runtime"""
+        self.google_api_key = api_key
+        if self.google_api_key:
+            try:
+                genai.configure(api_key=self.google_api_key)
+            except Exception as e:
+                print(f"Error configuring genai key: {e}")
     
     def extract_text_from_pdf(self, pdf_file):
         """Extract text from PDF using pdfplumber and OCR if needed"""
@@ -187,10 +199,22 @@ class AIResumeAnalyzer:
             return {"error": "Resume text is required for analysis."}
         
         if not self.google_api_key:
-            return {"error": "Google API key is not configured. Please add it to your .env file."}
+            return {"error": "Google API key is not configured. Please add a valid key in the sidebar or in your .env file."}
         
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            genai.configure(api_key=self.google_api_key)
+
+            model = None
+            model_names = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
+            for m_name in model_names:
+                try:
+                    model = genai.GenerativeModel(m_name)
+                    break
+                except:
+                    continue
+            
+            if not model:
+                model = genai.GenerativeModel("gemini-1.5-flash")
             
             base_prompt = f"""
             You are an expert resume analyst with deep knowledge of industry standards, job requirements, and hiring practices across various fields. Your task is to provide a comprehensive, detailed analysis of the resume provided.
@@ -273,7 +297,18 @@ class AIResumeAnalyzer:
             }
         
         except Exception as e:
-            return {"error": f"Analysis failed: {str(e)}"}
+            err_msg = str(e)
+            if "CONSUMER_SUSPENDED" in err_msg or "403" in err_msg or "PermissionDenied" in err_msg:
+                return {
+                    "error": (
+                        "⚠️ Your Google Gemini API Key has been suspended or revoked by Google (403 CONSUMER_SUSPENDED).\n\n"
+                        "👉 **How to fix:**\n"
+                        "1. Get a new free key from **[Google AI Studio](https://aistudio.google.com/app/apikey)**.\n"
+                        "2. Enter your new key in the **'🔑 Gemini API Key Settings'** expander in the sidebar or update your `.env` file.\n"
+                        "3. Alternatively, use the **Standard Analyzer** tab which does not require an API key!"
+                    )
+                }
+            return {"error": f"Analysis failed: {err_msg}"}
 
     
     def generate_pdf_report(self, analysis_result, candidate_name, job_role):
